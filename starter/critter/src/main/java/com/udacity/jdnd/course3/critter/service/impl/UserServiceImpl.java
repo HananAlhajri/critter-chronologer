@@ -4,6 +4,7 @@ import com.udacity.jdnd.course3.critter.entity.Customer;
 import com.udacity.jdnd.course3.critter.entity.Employee;
 import com.udacity.jdnd.course3.critter.entity.Pet;
 import com.udacity.jdnd.course3.critter.entity.enums.EmployeeSkill;
+import com.udacity.jdnd.course3.critter.exception.CustomerNotFoundException;
 import com.udacity.jdnd.course3.critter.exception.EmployeeNotFoundException;
 import com.udacity.jdnd.course3.critter.exception.PetNotFoundException;
 import com.udacity.jdnd.course3.critter.repo.CustomerRepository;
@@ -95,6 +96,12 @@ public class UserServiceImpl implements UserService {
         );
 
         return result;
+    }
+
+    @Override
+    public Customer findCustomer(long customerId) {
+        return customerRepository.findById(customerId)
+                .orElseThrow(CustomerNotFoundException::new);
     }
 
 

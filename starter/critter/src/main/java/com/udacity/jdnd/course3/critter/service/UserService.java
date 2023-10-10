@@ -22,4 +22,6 @@ public interface UserService {
     void setAvailability(Set<DayOfWeek> daysAvailable, long employeeId);
 
     List<Employee> findEmployeesForService(Set<EmployeeSkill> skills);
+
+    Customer findCustomer(long customerId);
 }
