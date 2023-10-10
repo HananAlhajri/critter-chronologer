@@ -1,25 +1,25 @@
 package com.udacity.jdnd.course3.critter.service;
 
-import com.udacity.jdnd.course3.critter.dto.CustomerDTO;
-import com.udacity.jdnd.course3.critter.dto.EmployeeDTO;
-import com.udacity.jdnd.course3.critter.dto.EmployeeRequestDTO;
+import com.udacity.jdnd.course3.critter.entity.Customer;
+import com.udacity.jdnd.course3.critter.entity.Employee;
+import com.udacity.jdnd.course3.critter.entity.enums.EmployeeSkill;
 
 import java.time.DayOfWeek;
 import java.util.List;
 import java.util.Set;
 
 public interface UserService {
-    CustomerDTO saveCustomer(CustomerDTO customerDTO);
+    Customer saveCustomer(Customer customer, List<Long> petIds);
 
-    List<CustomerDTO> getAllCustomers();
+    List<Customer> getAllCustomers();
 
-    CustomerDTO getOwnerByPet(long petId);
+    Customer getOwnerByPet(long petId);
 
-    EmployeeDTO saveEmployee(EmployeeDTO employeeDTO);
+    Employee saveEmployee(Employee employee);
 
-    EmployeeDTO getEmployee(long employeeId);
+    Employee getEmployee(long employeeId);
 
     void setAvailability(Set<DayOfWeek> daysAvailable, long employeeId);
 
-    List<EmployeeDTO> findEmployeesForService(EmployeeRequestDTO employeeDTO);
+    List<Employee> findEmployeesForService(Set<EmployeeSkill> skills);
 }
