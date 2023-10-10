@@ -11,7 +11,7 @@ import java.util.Set;
 @Entity
 @Getter
 @Setter
-public class Employee extends User{
+public class Employee extends User {
 
     @ElementCollection
     private Set<EmployeeSkill> skills;

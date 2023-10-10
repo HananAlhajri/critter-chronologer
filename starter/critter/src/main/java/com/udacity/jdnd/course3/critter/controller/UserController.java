@@ -3,6 +3,8 @@ package com.udacity.jdnd.course3.critter.controller;
 import com.udacity.jdnd.course3.critter.dto.CustomerDTO;
 import com.udacity.jdnd.course3.critter.dto.EmployeeDTO;
 import com.udacity.jdnd.course3.critter.dto.EmployeeRequestDTO;
+import com.udacity.jdnd.course3.critter.service.UserService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.DayOfWeek;
@@ -16,22 +18,25 @@ import java.util.Set;
  * would be fine too, though that is not part of the required scope for this class.
  */
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/user")
 public class UserController {
 
+    private final UserService userService;
+
     @PostMapping("/customer")
     public CustomerDTO saveCustomer(@RequestBody CustomerDTO customerDTO){
-        throw new UnsupportedOperationException();
+        return userService.saveCustomer(customerDTO);
     }
 
     @GetMapping("/customer")
     public List<CustomerDTO> getAllCustomers(){
-        throw new UnsupportedOperationException();
+        return userService.getAllCustomers();
     }
 
     @GetMapping("/customer/pet/{petId}")
     public CustomerDTO getOwnerByPet(@PathVariable long petId){
-        throw new UnsupportedOperationException();
+        return userService.getOwnerByPet(petId);
     }
 
     @PostMapping("/employee")
