@@ -1,18 +1,25 @@
 package com.udacity.jdnd.course3.critter.service.impl;
 
 import com.udacity.jdnd.course3.critter.dto.CustomerDTO;
+import com.udacity.jdnd.course3.critter.dto.EmployeeDTO;
+import com.udacity.jdnd.course3.critter.dto.EmployeeRequestDTO;
 import com.udacity.jdnd.course3.critter.entity.Customer;
+import com.udacity.jdnd.course3.critter.entity.Employee;
 import com.udacity.jdnd.course3.critter.entity.Pet;
+import com.udacity.jdnd.course3.critter.exception.EmployeeNotFoundException;
 import com.udacity.jdnd.course3.critter.exception.PetNotFoundException;
 import com.udacity.jdnd.course3.critter.repo.CustomerRepository;
+import com.udacity.jdnd.course3.critter.repo.EmployeeRepository;
 import com.udacity.jdnd.course3.critter.repo.PetRepository;
 import com.udacity.jdnd.course3.critter.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.DayOfWeek;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Service
 @Transactional
@@ -21,6 +28,7 @@ public class UserServiceImpl implements UserService {
 
     private final CustomerRepository customerRepository;
     private final PetRepository petRepository;
+    private final EmployeeRepository employeeRepository;
 
     @Override
     public CustomerDTO saveCustomer(CustomerDTO customerDTO) {
@@ -65,6 +73,49 @@ public class UserServiceImpl implements UserService {
         return mapCustomerToCustomerDTO(customer);
     }
 
+    @Override
+    public EmployeeDTO saveEmployee(EmployeeDTO employeeDTO) {
+
+        Employee employee = mapEmployeeDTOToEmployee(employeeDTO);
+        employeeRepository.save(employee);
+
+        return mapEmployeeToEmployeeDTO(employee);
+    }
+
+    @Override
+    public EmployeeDTO getEmployee(long employeeId) {
+
+        Employee employee = employeeRepository.findById(employeeId)
+                .orElseThrow(EmployeeNotFoundException::new);
+
+        return mapEmployeeToEmployeeDTO(employee);
+    }
+
+    @Override
+    public void setAvailability(Set<DayOfWeek> daysAvailable, long employeeId) {
+
+        Employee employee = employeeRepository.findById(employeeId)
+                .orElseThrow(EmployeeNotFoundException::new);
+
+        employee.setDaysAvailable(daysAvailable);
+
+    }
+
+    @Override
+    public List<EmployeeDTO> findEmployeesForService(EmployeeRequestDTO employeeDTO) {
+        List<Employee> employeeList = employeeRepository.findAll();
+        List<EmployeeDTO> employeeDTOList = new ArrayList<>();
+
+        employeeList.forEach(
+                employee -> {
+                    if(employee.getSkills().containsAll(employeeDTO.getSkills())){
+                        employeeDTOList.add(mapEmployeeToEmployeeDTO(employee));
+                    }
+                }
+        );
+        return employeeDTOList;
+    }
+
     private Customer mapCustomerDTOToCustomer(CustomerDTO customerDTO){
         Customer customer = new Customer();
 
@@ -92,5 +143,26 @@ public class UserServiceImpl implements UserService {
         customerDTO.setNotes(customer.getNotes());
 
         return customerDTO;
+    }
+
+    private EmployeeDTO mapEmployeeToEmployeeDTO(Employee employee){
+        EmployeeDTO employeeDTO = new EmployeeDTO();
+
+        employeeDTO.setId(employee.getId());
+        employeeDTO.setName(employee.getName());
+        employeeDTO.setSkills(employee.getSkills());
+        employeeDTO.setDaysAvailable(employee.getDaysAvailable());
+
+        return employeeDTO;
+    }
+
+    private Employee mapEmployeeDTOToEmployee(EmployeeDTO employeeDTO){
+        Employee employee = new Employee();
+
+        employee.setName(employeeDTO.getName());
+        employee.setSkills(employeeDTO.getSkills());
+        employee.setDaysAvailable(employeeDTO.getDaysAvailable());
+
+        return employee;
     }
 }
