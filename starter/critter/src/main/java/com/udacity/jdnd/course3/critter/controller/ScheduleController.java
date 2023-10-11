@@ -11,6 +11,7 @@ import com.udacity.jdnd.course3.critter.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,8 +28,30 @@ public class ScheduleController {
     private final PetService petService;
 
     @PostMapping
-    public ScheduleDTO createSchedule(@RequestBody ScheduleDTO scheduleDTO) {
-        Schedule schedule = scheduleService.createSchedule(mapScheduleDTOToSchedule(scheduleDTO));
+    public ScheduleDTO createSchedule(@RequestBody @Valid ScheduleDTO scheduleDTO) {
+        List<Pet> pets = new ArrayList<>();
+        List<Employee> employeeList = new ArrayList<>();
+
+        if(scheduleDTO.getPetIds() != null){
+            scheduleDTO.getPetIds().forEach(
+                    id -> {
+                        pets.add(petService.getPet(id));
+                    }
+            );
+        }
+
+        if(scheduleDTO.getEmployeeIds() != null){
+            scheduleDTO.getEmployeeIds().forEach(
+                    id ->
+                            employeeList.add(userService.getEmployee(id))
+            );
+        }
+        Schedule schedule = mapScheduleDTOToSchedule(scheduleDTO);
+        schedule.setPetList(pets);
+        schedule.setEmployeeList(employeeList);
+
+        scheduleService.createSchedule(schedule);
+
         return mapScheduleToScheduleDTO(schedule);
     }
 
@@ -50,6 +73,7 @@ public class ScheduleController {
     public List<ScheduleDTO> getScheduleForPet(@PathVariable long petId) {
 
         Pet pet = petService.getPet(petId);
+        pet.setOwner(userService.getOwnerByPet(petId));
 
         List<Schedule> scheduleList = scheduleService.getScheduleForPet(pet);
         List<ScheduleDTO> scheduleDTOList = new ArrayList<>();
@@ -106,6 +130,7 @@ public class ScheduleController {
         schedule.getPetList().forEach(pet ->
                 petIdsList.add(pet.getId()));
 
+        scheduleDTO.setId(schedule.getId());
         scheduleDTO.setEmployeeIds(employeeIdsList);
         scheduleDTO.setPetIds(petIdsList);
         scheduleDTO.setDate(schedule.getDate());
