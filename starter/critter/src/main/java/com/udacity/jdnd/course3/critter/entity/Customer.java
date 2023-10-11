@@ -1,15 +1,21 @@
 package com.udacity.jdnd.course3.critter.entity;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
+import org.hibernate.annotations.Nationalized;
 
 import javax.persistence.*;
 import java.util.List;
 
 @Entity
-@Setter
-@Getter
-public class Customer extends User {
+@Data
+public class Customer {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Nationalized
+    private String name;
 
     private String phoneNumber;
 
